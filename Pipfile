@@ -8,7 +8,6 @@ pylint = "*"
 autopep8 = "*"
 
 [packages]
-flask = "*"
 python-telegram-bot = "*"
 requests = "*"
 python-dotenv = "*"
