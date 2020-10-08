@@ -5,10 +5,14 @@ Deployed using heroku.
 Author: liuhh02 https://medium.com/@liuhh02
 """
 
-import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
+import logging
 from dotenv import load_dotenv
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+
+from telebot.wrappers.typing import send_typing_action
+from telebot.instagram import instagram
+import threading
 
 load_dotenv()
 
@@ -19,14 +23,26 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-TOKEN = os.getenv('bot_token')
+
+TOKEN = os.getenv('BOT_TOKEN')
 URL = os.getenv('URL')
+
+###########################################################
+# social media specific accounts
+IG_USER = os.getenv('IG_USER')
+IG_PWD = os.getenv('IG_PWD')
+
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hi!')
+
+@send_typing_action
+def judge_instagram(update, context):
+    threading.Thread(target=instagram.judge, args=(update, context, IG_USER, IG_PWD, context.args,)).start()
+    update.message.reply_text(f'Esto puede tomar un rato. Si no te envio nada es porque aún estoy procesando')
 
 def help(update, context):
     """Send a message when the command /help is issued."""
@@ -54,6 +70,7 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("instagram", judge_instagram))
 
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
