@@ -12,6 +12,7 @@ python-telegram-bot = "*"
 requests = "*"
 python-dotenv = "*"
 gunicorn = "*"
+instagram-scraper = "*"
 
 [requires]
 python_version = "3.8"
