@@ -41,7 +41,7 @@ def start(update, context):
 
 @send_typing_action
 def judge_instagram(update, context):
-    threading.Thread(target=instagram.judge, args=(update, context, IG_USER, IG_PWD, context.args,)).start()
+    instagram.judge(update, context, IG_USER, IG_PWD, context.args)
     update.message.reply_text(f'Esto puede tomar un rato. Si no te envio nada es porque aún estoy procesando')
 
 def help(update, context):
