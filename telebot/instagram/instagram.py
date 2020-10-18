@@ -10,6 +10,7 @@ def judge(update, context, *args):
     amount = amount[0] if amount else 1
 
     command = f'instagram-scraper {accounts} -d {IG_FILE_LOC} -n --latest --media-types none --comments --comments -m {amount} --proxies \'{PROXIES}\''
+    print(command)
     os.system(command)
     for watched in os.listdir(IG_FILE_LOC):
         if '.keep' in watched:
