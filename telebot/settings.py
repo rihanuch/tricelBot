@@ -2,7 +2,7 @@ import os
 import json
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("../.env")
 
 PORT = int(os.getenv('PORT', 5000))
 TOKEN = os.getenv('BOT_TOKEN')
