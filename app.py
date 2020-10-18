@@ -2,21 +2,17 @@
 """
 Simple Bot to reply to Telegram messages taken from the python-telegram-bot examples.
 Deployed using heroku.
-Author: liuhh02 https://medium.com/@liuhh02
+Template: liuhh02 https://medium.com/@liuhh02
 """
 
-import os
+from telebot.settings import PORT, TOKEN, URL, PROXIES
 import logging
-from dotenv import load_dotenv
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 from telebot.wrappers.typing import send_typing_action
 from telebot.instagram import instagram
 import threading
 
-load_dotenv()
-
-PORT = int(os.getenv('PORT', 5000))
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -24,37 +20,36 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-TOKEN = os.getenv('BOT_TOKEN')
-URL = os.getenv('URL')
-
-###########################################################
-# social media specific accounts
-IG_USER = os.getenv('IG_USER')
-IG_PWD = os.getenv('IG_PWD')
-
-
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
+
+
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Hi!')
 
+
 @send_typing_action
 def judge_instagram(update, context):
-    instagram.judge(update, context, IG_USER, IG_PWD, context.args)
+    logger.info(f'Instagram: user \"{update.message.from_user["username"]}\" requested: "{context.args}"')
     update.message.reply_text(f'Esto puede tomar un rato. Si no te envio nada es porque aún estoy procesando')
+    threading.Thread(target=instagram.judge, args=(update, context, *context.args,)).start()
+
 
 def help(update, context):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
 
+
 def echo(update, context):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
 
+
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
+
 
 def main():
     # https://towardsdatascience.com/how-to-deploy-a-telegram-bot-using-heroku-for-free-9436f89575d2
@@ -88,6 +83,7 @@ def main():
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
+
 
 if __name__ == '__main__':
     main()
